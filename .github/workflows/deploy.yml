@@ -1,0 +1,33 @@
+# GitHub Actions workflow for deploying to Railway
+# Docs: https://docs.railway.app/guides/github-actions
+
+name: Deploy to Railway
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'  # Checkout Frontend and Backend submodules
+          fetch-depth: 0
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --detach
+
+      - name: Output deployment URL
+        run: |
+          echo "Deployment initiated!"
+          echo "Check Railway dashboard for deployment status and URLs"
